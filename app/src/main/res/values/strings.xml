@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Throwfie</string>
     <string name="throwfie_logo">Throwfie Logo</string>
+    <string name="numberExample">Ex. 3</string>
+    <string name="startButton">Start Throwfie</string>
+    <string name="running">Throwfie Running</string>
 </resources>
