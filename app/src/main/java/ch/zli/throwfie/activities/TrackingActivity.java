@@ -73,7 +73,7 @@ public class TrackingActivity extends AppCompatActivity implements SensorEventLi
         }
         if (thresholdReached && speed < captureThreshold){
             if (mBound) {
-                //Make picture
+                mService.takePicture();
             }
             thresholdReached = false;
             Intent intent = new Intent(this, ResultActivity.class);
