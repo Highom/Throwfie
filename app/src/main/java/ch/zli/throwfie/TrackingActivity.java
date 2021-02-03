@@ -1,22 +1,24 @@
 package ch.zli.throwfie;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class TrackingActivity extends AppCompatActivity implements SensorEventListener {
 
     private SensorManager sensorManager;
+    private boolean thresholdReached = false;
+    private final int minThreshold = 60;
+    private final int captureThreshold = 9;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking);
-
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
     }
@@ -24,14 +26,9 @@ public class TrackingActivity extends AppCompatActivity implements SensorEventLi
     @Override
     protected void onResume() {
         super.onResume();
-        Sensor gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-        if (gyroscope != null) {
-            sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_FASTEST);
-        }
-        if (accelerometer != null){
-            sensorManager.registerListener(this,accelerometer,SensorManager.SENSOR_DELAY_FASTEST);
+        Sensor accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accel != null) {
+            sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
         }
     }
 
@@ -43,16 +40,17 @@ public class TrackingActivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getName() == "gyroscope-icm20690"){
-//            gyroX = event.values[0];
-//            gyroY = event.values[1];
-//            gyroZ = event.values[2];
-        }else{
-//            accelX = event.values[0];
-//            accelY = event.values[1];
-//            accelZ = event.values[2];
+        float X = event.values[0];
+        float Y = event.values[1];
+        float Z = event.values[2];
+        double speed = Math.sqrt(X * X + Y * Y + Z * Z);
+        if ( speed >  minThreshold){
+            thresholdReached = true;
         }
-        //use Service to trigger image
+        if (thresholdReached && speed < captureThreshold){
+            //Take Pictures
+            thresholdReached = false;
+        }
     }
 
     @Override
