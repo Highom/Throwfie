@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
-
+    tools:context=".activities.ResultActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,15 +20,20 @@
             android:layout_marginVertical="30dp"
             android:layout_weight="0"
             android:contentDescription="@string/throwfie_logo"
+            android:rotation="-180"
             app:srcCompat="@drawable/throwfieicon" />
 
-        <Button
-            android:id="@+id/startButton"
-            android:layout_width="250dp"
-            android:layout_height="100dp"
+        <TextView
+            android:id="@+id/runningMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:text="@string/startButton" />
+            android:fontFamily="sans-serif"
+            android:text="@string/success"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

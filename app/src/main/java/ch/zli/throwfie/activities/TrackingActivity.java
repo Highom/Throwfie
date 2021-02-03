@@ -1,16 +1,25 @@
-package ch.zli.throwfie;
+package ch.zli.throwfie.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.IBinder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class TrackingActivity extends AppCompatActivity implements SensorEventListener {
+import ch.zli.throwfie.services.CameraService;
+import ch.zli.throwfie.R;
 
+public class TrackingActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager sensorManager;
+    private CameraService mService;
+    private boolean mBound = false;
     private boolean thresholdReached = false;
     private final int minThreshold = 60;
     private final int captureThreshold = 9;
@@ -21,6 +30,21 @@ public class TrackingActivity extends AppCompatActivity implements SensorEventLi
         setContentView(R.layout.activity_tracking);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Intent intent = new Intent(this, CameraService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(connection);
+        mBound = false;
     }
 
     @Override
@@ -48,10 +72,30 @@ public class TrackingActivity extends AppCompatActivity implements SensorEventLi
             thresholdReached = true;
         }
         if (thresholdReached && speed < captureThreshold){
-            //Take Pictures
+            if (mBound) {
+                //Make picture
+            }
             thresholdReached = false;
+            Intent intent = new Intent(this, ResultActivity.class);
+            startActivity(intent);
         }
     }
+
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name,
+                                       IBinder service) {
+            CameraService.CameraBinder binder = (CameraService.CameraBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
